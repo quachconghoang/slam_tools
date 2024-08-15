@@ -1,0 +1,128 @@
+[
+    {
+        "task": "get_image_pair_exhaustive",
+        "comment": "",
+        "params": {
+            "input": "",
+            "output": "image_pair.csv"
+        }
+    },
+    {
+        "task": "transparent_crop",
+        "comment": "",
+        "params": {
+            "input": "image_pair.csv",
+            "output": "transparent_crop.json"
+        }
+    },
+    {
+        "task": "matching",
+        "comment": "sfm_crop sift_LightGlue (imsize=4096)",
+        "params": {
+            "matcher": "LightGlue",
+            "extractor": "sift",
+            "input": {
+                "image_pair": "image_pair.csv",
+                "rects": "transparent_crop.json"
+            },
+            "output": {
+                "keypoints": "keypoints.h5",
+                "descriptions": "descriptions.h5",
+                "matches": "matches.h5",
+                "image_pair": "image_pair.csv"
+            },
+            "keypoint_detection_args": {
+                "extractor_conf": {
+                    "max_num_keypoints": 8000,
+                    "nms_radius": 2,
+                    "detection_threshold": 0.0026
+                },
+                "preprocess_conf": {
+                    "resize": 4096
+                },
+                "dtype": "float32"
+            },
+            "keypoint_matching_args": {
+                "matcher_params": {
+                    "width_confidence": -1,
+                    "depth_confidence": -1,
+                    "mp": true
+                },
+                "min_matches": 0,
+                "verbose": false
+            }
+        }
+    },
+    {
+        "task": "count_matching_num",
+        "comment": "",
+        "params": {
+            "input": {
+                "image_pair": "image_pair.csv",
+                "matches": "matches.h5"
+            },
+            "output": "image_pair.csv"
+        }
+    },
+
+    {
+        "task": "get_transparent_pair",
+        "comment": "",
+        "params": {
+            "input": "image_pair.csv",
+            "output": "image_pair.csv",
+            "k": 2
+        }
+    },
+    {
+        "task": "matching",
+        "comment": "transparent_crop ALIKED_LightGlue (imsize=2048/4096)",
+        "params": {
+            "matcher": "LightGlue",
+            "extractor": "aliked",
+            "input": {
+                "image_pair": "image_pair.csv",
+                "rects": "transparent_crop.json"
+            },
+            "output": {
+                "keypoints": "keypoints.h5",
+                "descriptions": "descriptions.h5",
+                "matches": "matches.h5",
+                "image_pair": "image_pair.csv"
+            },
+            "keypoint_detection_args": {
+                "extractor_conf": {
+                    "max_num_keypoints": 8000,
+                    "nms_radius": 2
+                },
+                "dynamic_resize": [2048, 4096],
+                "dtype": "float16"
+            },
+            "keypoint_matching_args": {
+                "matcher_params": {
+                    "width_confidence": -1,
+                    "depth_confidence": -1,
+                    "mp": true
+                },
+                "min_matches": 0,
+                "verbose": false
+            }
+        }
+    },
+    {
+        "task": "ransac",
+        "comment": "",
+        "params": {
+            "input": {
+                "keypoints": "keypoints.h5",
+                "matches": "matches.h5"
+            },
+            "output": "matches.h5",
+            "min_matches": 0,
+            "ransac_params": {
+                "param1": 1.0,
+                "param2": 0.9999
+            }
+        }
+    }
+]

@@ -1,0 +1,84 @@
+[
+    {
+        "task": "get_exif",
+        "comment": "",
+        "params": {
+            "input": "",
+            "output": "h_w_exif.json"
+        }
+    },
+    {
+        "task": "get_image_pair_exhaustive",
+        "comment": "",
+        "params": {
+            "input": "",
+            "output": "image_pair.csv"
+        }
+    },
+    {
+        "task": "matching",
+        "comment": "aliked_LightGlue (imsize=840)",
+        "params": {
+            "matcher": "LightGlue",
+            "extractor": "aliked",
+            "input": {
+                "image_pair": "image_pair.csv"
+            },
+            "output": {
+                "keypoints": "keypoints.h5",
+                "descriptions": "descriptions.h5",
+                "matches": "matches.h5"
+            },
+            "keypoint_detection_args": {
+                "extractor_conf": {
+                    "max_num_keypoints": 1024
+                },
+                "preprocess_conf": {
+                    "resize": 840
+                },
+                "dtype": "float32"
+            },
+            "keypoint_matching_args": {
+                "matcher_params": {
+                    "filter_threshold": 0.1,
+                    "width_confidence": 0.95,
+                    "depth_confidence": 0.9,
+                    "mp": true
+                },
+                "min_matches": 0,
+                "verbose": false
+            }
+        }
+    },
+    {
+        "task": "ransac",
+        "comment": "",
+        "params": {
+            "input": {
+                "keypoints": "keypoints.h5",
+                "matches": "matches.h5"
+            },
+            "output": {
+                "matches": "matches.h5",
+                "fms": "fms.pkl"
+            },
+            "min_matches": 0,
+            "ransac_params": {
+                "param1": 5,
+                "param2": 0.9999,
+                "maxIters": 50000
+            }
+        }
+    },
+    {
+        "task": "count_matching_num",
+        "comment": "",
+        "params": {
+            "input": {
+                "image_pair": "image_pair.csv",
+                "matches": "matches.h5"
+            },
+            "output": "image_pair.csv"
+        }
+    }
+]

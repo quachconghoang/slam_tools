@@ -165,4 +165,5 @@ cython_debug/
 /models/
 /train/
 /kaggle/
+/IMC2024_official_weights/*.*
 __pycache__
